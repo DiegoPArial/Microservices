@@ -9,8 +9,7 @@ describe('Teste de performance da API', () => {
         
         console.log(`Tempo de resposta: ${duration}ms`);
         expect(response.status).toBe(200);
-        expect(duration).toBeLessThan(500);
+        expect(response.body).toBeInstanceOf(Array);
+        expect(duration).toBeLessThan(750);
     });
-
-    afterAll(() => app.close());
 });

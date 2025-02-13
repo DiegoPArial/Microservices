@@ -32,6 +32,20 @@ class TarefaModel {
     const { rows } = await pool.query(query, values);
     return rows[0] || null;
   }
+
+  static async listarTarefas() {
+    const query = 'SELECT * FROM tarefas ORDER BY data_criacao DESC;';
+    const { rows } = await pool.query(query);
+    return rows;
+  }
+
+  static async buscarTarefaPorId(id_tarefa) {
+    const query = 'SELECT * FROM tarefas WHERE id_tarefa = $1;';
+    const values = [id_tarefa];
+
+    const { rows } = await pool.query(query, values);
+    return rows[0] || null;
+  }
 }
 
 module.exports = TarefaModel;

@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "API de Gerenciamento de Tarefas",
-        "description": "Esta API permite a criação, edição e remoção de tarefas.",
+        "description": "Esta API permite a criação, edição, remoção e consulta de tarefas.",
         "version": "1.0.0",
         "contact": {
             "email": "diprearial@gmail.com"
@@ -17,6 +17,26 @@
     ],
     "paths": {
         "/tarefas": {
+            "get": {
+                "summary": "Listar todas as tarefas",
+                "description": "Retorna uma lista de todas as tarefas cadastradas.",
+                "responses": {
+                    "200": {
+                        "description": "Lista de tarefas retornada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/Tarefa" }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao buscar tarefas"
+                    }
+                }
+            },
             "post": {
                 "summary": "Criar uma nova tarefa",
                 "description": "Cria uma nova tarefa no sistema.",
@@ -56,6 +76,37 @@
             }
         },
         "/tarefas/{id_tarefa}": {
+            "get": {
+                "summary": "Buscar uma tarefa pelo ID",
+                "description": "Retorna os detalhes de uma tarefa específica.",
+                "parameters": [
+                    {
+                        "name": "id_tarefa",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" },
+                        "description": "ID da tarefa a ser buscada"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes da tarefa retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tarefa"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tarefa não encontrada"
+                    },
+                    "500": {
+                        "description": "Erro ao buscar tarefa"
+                    }
+                }
+            },
             "put": {
                 "summary": "Editar uma tarefa",
                 "description": "Edita uma tarefa existente pelo ID.",

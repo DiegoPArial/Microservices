@@ -18,9 +18,11 @@ app.get('/terms', (req, res) => {
     return res.json({ message: "Termos de Serviço" });
 });
 
-const PORT = 3001;
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-});
+if (require.main === module) {
+    const PORT = 3001;
+    app.listen(PORT, () => {
+        console.log(`Servidor rodando na porta ${PORT}`);
+    });
+}
 
 module.exports = app;
