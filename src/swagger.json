@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "API de Gerenciamento de Tarefas",
-        "description": "Esta API permite a criação, edição, remoção e consulta de tarefas.",
+        "description": "Esta API permite a criação, edição, remoção e consulta de usuários e tarefas.",
         "version": "1.0.0",
         "contact": {
             "email": "diprearial@gmail.com"
@@ -16,6 +16,166 @@
         }
     ],
     "paths": {
+        "/usuarios": {
+            "get": {
+                "summary": "Listar todos os usuários",
+                "description": "Retorna uma lista de todos os usuários cadastrados.",
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuários retornada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/Usuario" }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao buscar usuários"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Criar um novo usuário",
+                "description": "Cria um novo usuário no sistema.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "nome": { "type": "string" },
+                                    "email": { "type": "string" },
+                                    "senha": { "type": "string" }
+                                },
+                                "required": ["nome", "email", "senha"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuário criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Usuario"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao criar usuário"
+                    }
+                }
+            }
+        },
+        "/usuarios/{id_usuario}": {
+            "get": {
+                "summary": "Buscar um usuário pelo ID",
+                "description": "Retorna os detalhes de um usuário específico.",
+                "parameters": [
+                    {
+                        "name": "id_usuario",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" },
+                        "description": "ID do usuário a ser buscado"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do usuário retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Usuario"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado"
+                    },
+                    "500": {
+                        "description": "Erro ao buscar usuário"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Editar um usuário",
+                "description": "Edita um usuário existente pelo ID.",
+                "parameters": [
+                    {
+                        "name": "id_usuario",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "nome": { "type": "string" },
+                                    "email": { "type": "string" },
+                                    "senha": { "type": "string" }
+                                },
+                                "required": ["nome", "email", "senha"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuário editado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Usuario"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado"
+                    },
+                    "500": {
+                        "description": "Erro ao editar usuário"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Deletar um usuário",
+                "description": "Remove um usuário pelo ID.",
+                "parameters": [
+                    {
+                        "name": "id_usuario",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" },
+                        "description": "ID do usuário a ser deletado"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuário deletado com sucesso"
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado"
+                    },
+                    "500": {
+                        "description": "Erro ao deletar usuário"
+                    }
+                }
+            }
+        },
         "/tarefas": {
             "get": {
                 "summary": "Listar todas as tarefas",
@@ -162,9 +322,7 @@
                         "name": "id_tarefa",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "integer"
-                        },
+                        "schema": { "type": "integer" },
                         "description": "ID da tarefa a ser deletada"
                     }
                 ],
@@ -184,6 +342,15 @@
     },
     "components": {
         "schemas": {
+            "Usuario": {
+                "type": "object",
+                "properties": {
+                    "id_usuario": { "type": "integer" },
+                    "nome": { "type": "string" },
+                    "email": { "type": "string" },
+                    "senha": { "type": "string" }
+                }
+            },
             "Tarefa": {
                 "type": "object",
                 "properties": {

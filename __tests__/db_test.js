@@ -1,14 +1,14 @@
-const pool = require("../src/config/db");
+const sequelize = require('../src/config/sequelize');
 
-async function testConnection() {
+async function testarConexao() {
   try {
-    const res = await pool.query("SELECT NOW()");
-    console.log("Conexão bem-sucedida!", res.rows);
+    await sequelize.authenticate();
+    console.log('✅ Conexão com o banco de dados bem-sucedida!');
   } catch (error) {
-    console.error("Erro ao conectar:", error);
+    console.error('❌ Erro ao conectar no banco:', error);
   } finally {
-    await pool.end();
+    await sequelize.close();
   }
 }
 
-testConnection();
+testarConexao();

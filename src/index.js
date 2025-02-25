@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const tarefaRoutes = require('./routes/tarefaRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocs = require('./swagger.json');
 
@@ -13,6 +14,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api', tarefaRoutes);
+app.use('/api', usuarioRoutes);
+
 
 app.get('/terms', (req, res) => {
     return res.json({ message: "Termos de Serviço" });

@@ -1,71 +1,73 @@
-const TarefaModel = require('../models/tarefaModel');
+const Tarefa = require('../models/tarefaModel');
+const Usuario = require('../models/usuarioModel');
 
-const getTarefas = async (req, res) => {
+// Criar uma nova tarefa
+exports.criarTarefa = async (req, res) => {
   try {
-    const tarefas = await TarefaModel.listarTarefas();
-    res.status(200).json(tarefas);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao buscar tarefas', detalhes: error.message });
-  }
-};
+    const { titulo, descricao, data_vencimento, status, id_usuario } = req.body;
 
-const getTarefaPorId = async (req, res) => {
-  try {
-    const { id_tarefa } = req.params;
-    const tarefa = await TarefaModel.buscarTarefaPorId(id_tarefa);
-
-    if (!tarefa) {
-      return res.status(404).json({ erro: 'Tarefa não encontrada' });
+    // Verifica se o usuário existe antes de criar a tarefa
+    const usuarioExiste = await Usuario.findByPk(id_usuario);
+    if (!usuarioExiste) {
+      return res.status(400).json({ error: 'Usuário não encontrado' });
     }
 
-    res.status(200).json(tarefa);
+    const tarefa = await Tarefa.create({ titulo, descricao, data_vencimento, status, id_usuario });
+    res.status(201).json(tarefa);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao buscar tarefa', detalhes: error.message });
+    console.error('Erro ao criar tarefa:', error);
+    res.status(500).json({ error: 'Erro ao criar tarefa' });
   }
 };
 
-const criarTarefa = async (req, res) => {
+
+// Listar todas as tarefas
+exports.listarTarefas = async (req, res) => {
   try {
-    const novaTarefa = await TarefaModel.criarTarefa(req.body);
-    res.status(201).json(novaTarefa);
+    const tarefas = await Tarefa.findAll();
+    res.json(tarefas);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao criar tarefa', detalhes: error.message });
+    res.status(500).json({ error: 'Erro ao listar tarefas' });
   }
 };
 
-const editarTarefa = async (req, res) => {
-  try {
-    const { id_tarefa } = req.params;
-    const tarefaAtualizada = await TarefaModel.editarTarefa(id_tarefa, req.body);
-
-    if (!tarefaAtualizada) {
-      return res.status(404).json({ erro: 'Tarefa não encontrada' });
-    }
-
-    res.status(200).json(tarefaAtualizada);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao editar tarefa', detalhes: error.message });
-  }
-};
-
-const deletarTarefa = async (req, res) => {
+// Buscar tarefa por ID
+exports.buscarTarefaPorId = async (req, res) => {
   try {
     const { id_tarefa } = req.params;
-    const tarefaDeletada = await TarefaModel.deletarTarefa(id_tarefa);
-
-    if (!tarefaDeletada) {
-      return res.status(404).json({ erro: 'Tarefa não encontrada' });
-    }
-
-    res.status(200).json({ mensagem: 'Tarefa deletada com sucesso', tarefa: tarefaDeletada });
+    const tarefa = await Tarefa.findByPk(id_tarefa);
+    if (!tarefa) return res.status(404).json({ error: 'Tarefa não encontrada' });
+    res.json(tarefa);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao deletar tarefa', detalhes: error.message });
+    res.status(500).json({ error: 'Erro ao buscar tarefa' });
   }
 };
 
-module.exports = { getTarefas, getTarefaPorId, criarTarefa, editarTarefa, deletarTarefa };
+// Atualizar tarefa por ID
+exports.atualizarTarefa = async (req, res) => {
+  try {
+    const { id_tarefa } = req.params;
+    const { titulo, descricao, data_vencimento, status } = req.body;
+    const tarefa = await Tarefa.findByPk(id_tarefa);
+    if (!tarefa) return res.status(404).json({ error: 'Tarefa não encontrada' });
+
+    await tarefa.update({ titulo, descricao, data_vencimento, status });
+    res.json(tarefa);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao atualizar tarefa' });
+  }
+};
+
+// Deletar tarefa por ID
+exports.deletarTarefa = async (req, res) => {
+  try {
+    const { id_tarefa } = req.params;
+    const tarefa = await Tarefa.findByPk(id_tarefa);
+    if (!tarefa) return res.status(404).json({ error: 'Tarefa não encontrada' });
+
+    await tarefa.destroy();
+    res.json({ message: 'Tarefa deletada com sucesso' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao deletar tarefa' });
+  }
+};
